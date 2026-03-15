@@ -33,21 +33,6 @@ variable "azs" {
   default = ["us-east-1a", "us-east-1b"]
 }
 
-variable "domain_name" {
-  type    = string
-  default = "dev.example.com"
-}
-
-variable "route53_zone_name" {
-  type    = string
-  default = "example.com"
-}
-
-variable "acm_certificate_arn" {
-  type    = string
-  default = ""
-}
-
 variable "container_registry" {
   type    = string
   default = "ghcr.io/security-org-230982/simple-game"

@@ -76,54 +76,11 @@ module "irsa_ingress" {
   }
 }
 
-module "irsa_external_dns" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.39"
-
-  role_name = "${var.cluster_name}-external-dns"
-
-  role_policy_arns = {
-    route53 = aws_iam_policy.external_dns.arn
-  }
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:external-dns"]
-    }
-  }
-}
-
-resource "aws_iam_policy" "external_dns" {
-  name = "${var.cluster_name}-external-dns"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = ["route53:ChangeResourceRecordSets"],
-        Resource = ["arn:aws:route53:::hostedzone/*"]
-      },
-      {
-        Effect   = "Allow",
-        Action   = ["route53:ListHostedZones", "route53:ListResourceRecordSets"],
-        Resource = ["*"]
-      }
-    ]
-  })
-}
-
 resource "kubernetes_namespace" "game" {
   metadata { name = "game" }
   depends_on = [
     module.eks
   ]
-}
-
-data "aws_route53_zone" "selected" {
-  name         = var.route53_zone_name
-  private_zone = false
 }
 
 resource "kubernetes_namespace" "simple_game" {
