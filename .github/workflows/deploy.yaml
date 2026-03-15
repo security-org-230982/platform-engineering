@@ -50,6 +50,13 @@ jobs:
           repository: security-org-230982/security-engineering
           path: security
 
+      - name: Debug directory structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Listing security folder:"
+          ls -R security || true
+
       - name: Copy Falco rules into Terraform context
         run: |
           mkdir -p terraform/environments/dev/falco-rules
