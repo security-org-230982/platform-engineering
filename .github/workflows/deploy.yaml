@@ -27,7 +27,7 @@ jobs:
       image-ref: ghcr.io/security-org-230982/simple-game:${{ github.event.inputs.image_tag || 'main' }}
       chart-path: helm/simple-game
       values-file: helm/simple-game/values.yaml
-      certificate-identity: "https://github.com/security-org-230982/product-engineering/.github/workflows/build-test-publish.yaml@refs/heads/main"
+      certificate-identity: "https://github.com/security-org-230982/security-engineering/.github/workflows/image-post-build.yaml@refs/heads/main"
 
   cis-benchmark:
     uses: security-org-230982/security-engineering/.github/workflows/cis-benchmark.yaml@main
