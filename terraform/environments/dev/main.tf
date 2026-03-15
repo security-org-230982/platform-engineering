@@ -11,11 +11,6 @@ provider "aws" {
   }
 }
 
-data "aws_route53_zone" "selected" {
-  name         = var.route53_zone_name
-  private_zone = false
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.8"
@@ -117,14 +112,6 @@ resource "aws_iam_policy" "external_dns" {
       }
     ]
   })
-}
-
-data "aws_eks_cluster" "this" {
-  name = module.eks.cluster_name
-}
-
-data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_name
 }
 
 resource "kubernetes_namespace" "game" {
