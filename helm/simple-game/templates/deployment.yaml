@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "simple-game.fullname" . }}
+  labels:
+    app: {{ include "simple-game.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "simple-game.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "simple-game.name" . }}
+    spec:
+      serviceAccountName: {{ include "simple-game.serviceAccountName" . }}
+      securityContext:
+{{ toYaml .Values.podSecurityContext | indent 8 }}
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.containerPort }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.containerPort }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

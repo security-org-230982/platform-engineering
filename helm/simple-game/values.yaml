@@ -1,0 +1,46 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/security-org-230982/simple-game
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+containerPort: 3000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 10001
+
+podSecurityContext:
+  fsGroup: 10001
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+ingress:
+  enabled: true
+  className: alb
+  host: game.dev.example.com
+  annotations: {}
+
+networkPolicy:
+  enabled: true

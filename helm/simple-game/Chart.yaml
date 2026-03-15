@@ -1,0 +1,6 @@
+apiVersion: v2
+name: simple-game
+description: Sample simple game app
+version: 0.1.0
+appVersion: "1.0.0"
+type: application

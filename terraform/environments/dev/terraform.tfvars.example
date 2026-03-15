@@ -1,0 +1,6 @@
+region              = "us-east-1"
+route53_zone_name   = "example.com"
+domain_name         = "dev.example.com"
+acm_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/REPLACE_ME"
+container_registry  = "ghcr.io/your-org/simple-game"
+image_tag           = "main"
