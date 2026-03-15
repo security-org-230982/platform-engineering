@@ -20,14 +20,11 @@ permissions:
   security-events: write
   packages: read
 
-env:
-  IMAGE_REF: ghcr.io/security-org-230982/simple-game:${{ github.event.inputs.image_tag || 'main' }}
-
 jobs:
   deploy-gates:
     uses: security-org-230982/security-engineering/.github/workflows/platform-deploy-gates.yaml@main
     with:
-      image-ref: ${{ env.IMAGE_REF }}
+      image-ref: ghcr.io/security-org-230982/simple-game:${{ github.event.inputs.image_tag || 'main' }}
       chart-path: helm/simple-game
       values-file: helm/simple-game/values.yaml
       certificate-identity: "https://github.com/security-org-230982/product-engineering/.github/workflows/build-test-publish.yaml@refs/heads/main"
@@ -49,7 +46,7 @@ jobs:
         uses: azure/setup-kubectl@v4
 
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-1
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
 
       - name: Verify Kyverno admission controller is installed
         run: |
@@ -93,7 +90,6 @@ jobs:
         run: terraform init
 
       - name: Terraform apply
-        working-directory: platform/terraform/environments/dev
         run: |
           terraform apply -auto-approve \
             -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}" \
@@ -196,7 +192,7 @@ jobs:
         uses: azure/setup-kubectl@v4
 
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-1
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
 
       - name: Apply Kyverno policies
         run: |
