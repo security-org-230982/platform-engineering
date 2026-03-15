@@ -22,15 +22,24 @@ jobs:
   iac-scan:
     uses: security-org-230982/security-engineering/.github/workflows/iac-static-scans.yaml@main
 
-  terraform-scan:
-    uses: security-org-230982/security-engineering/.github/workflows/terraform-scan.yaml@main
+  deploy-gates:
+    uses: security-org-230982/security-engineering/.github/workflows/platform-deploy-gates.yaml@main
+    with:
+      image-ref: ghcr.io/security-org-230982/simple-game:main
+      chart-path: helm/simple-game
+      values-file: helm/simple-game/values.yaml
+      certificate-identity: "https://github.com/security-org-230982/product-engineering/.github/workflows/build-test-publish.yaml@refs/heads/main"
 
   helm-chart-scan:
     uses: security-org-230982/security-engineering/.github/workflows/helm-chart-scan.yaml@main
 
   terraform-plan:
     runs-on: ubuntu-latest
-    needs: [secrets-scan, iac-scan, terraform-scan, helm-chart-scan]
+    needs: 
+      - secrets-scan
+      - iac-scan
+      - deploy-gates
+      - helm-chart-scan
     defaults:
       run:
         working-directory: terraform/environments/dev
