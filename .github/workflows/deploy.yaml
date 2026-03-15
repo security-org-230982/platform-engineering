@@ -57,12 +57,6 @@ jobs:
           echo "Listing security folder:"
           ls -R security || true
 
-      - name: Copy Falco rules into Terraform context
-        run: |
-          mkdir -p terraform/environments/dev/falco-rules
-          cp security/security/falco/rules/kubernetes-runtime-rules.yaml terraform/environments/dev/falco-rules/
-          cp security/security/falco/rules/kubernetes-runtime-noise-tuning.yaml terraform/environments/dev/falco-rules/
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
