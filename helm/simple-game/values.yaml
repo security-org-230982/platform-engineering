@@ -40,7 +40,10 @@ ingress:
   enabled: true
   className: alb
   host: game.dev.example.com
-  annotations: {}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    external-dns.alpha.kubernetes.io/hostname: game.dev.example.com
 
 networkPolicy:
   enabled: true

@@ -11,6 +11,11 @@ provider "aws" {
   }
 }
 
+data "aws_route53_zone" "selected" {
+  name         = var.route53_zone_name
+  private_zone = false
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.8"
@@ -122,28 +127,16 @@ data "aws_eks_cluster_auth" "this" {
   name = module.eks.cluster_name
 }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.this.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.this.token
+resource "kubernetes_namespace" "game" {
+  metadata { name = "game" }
+  depends_on = [
+    module.eks
+  ]
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.this.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.this.token
-  }
-}
-
-locals {
-  falco_runtime_rules = file(var.falco_runtime_rules_file)
-  falco_noise_tuning  = file(var.falco_noise_tuning_file)
-
-  falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
-    falco_runtime_rules = local.falco_runtime_rules
-    falco_noise_tuning  = local.falco_noise_tuning
-  })
+data "aws_route53_zone" "selected" {
+  name         = var.route53_zone_name
+  private_zone = false
 }
 
 resource "kubernetes_namespace" "simple_game" {
@@ -165,188 +158,27 @@ resource "kubernetes_namespace" "simple_game" {
   ]
 }
 
-resource "helm_release" "aws_load_balancer_controller" {
-  name             = "aws-load-balancer-controller"
-  namespace        = "kube-system"
-  create_namespace = false
-
-  repository = "https://aws.github.io/eks-charts"
-  chart      = "aws-load-balancer-controller"
-
-  set {
-    name  = "clusterName"
-    value = module.eks.cluster_name
+resource "kubernetes_ingress_class_v1" "alb" {
+  metadata {
+    name = "alb"
   }
 
-  set {
-    name  = "region"
-    value = var.region
-  }
-
-  set {
-    name  = "vpcId"
-    value = module.vpc.vpc_id
-  }
-
-  set {
-    name  = "serviceAccount.create"
-    value = "true"
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = "aws-load-balancer-controller"
-  }
-
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.irsa_ingress.iam_role_arn
+  spec {
+    controller = "ingress.k8s.aws/alb"
   }
 
   depends_on = [
     module.eks,
-    module.irsa_ingress
+    helm_release.aws_load_balancer_controller
   ]
 }
 
-resource "helm_release" "external_dns" {
-  name             = "external-dns"
-  namespace        = "kube-system"
-  create_namespace = false
+locals {
+  falco_runtime_rules = file(var.falco_runtime_rules_file)
+  falco_noise_tuning  = file(var.falco_noise_tuning_file)
 
-  repository = "https://kubernetes-sigs.github.io/external-dns"
-  chart      = "external-dns"
-
-  set {
-    name  = "provider"
-    value = "aws"
-  }
-
-  set {
-    name  = "policy"
-    value = "upsert-only"
-  }
-
-  set {
-    name  = "registry"
-    value = "txt"
-  }
-
-  set {
-    name  = "serviceAccount.create"
-    value = "true"
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = "external-dns"
-  }
-
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.irsa_external_dns.iam_role_arn
-  }
-
-  depends_on = [
-    module.eks,
-    module.irsa_external_dns
-  ]
-}
-
-resource "helm_release" "kyverno" {
-  name             = "kyverno"
-  namespace        = "kyverno"
-  create_namespace = true
-
-  repository = "https://kyverno.github.io/kyverno/"
-  chart      = "kyverno"
-  version    = "3.2.6"
-
-  set {
-    name  = "admissionController.replicas"
-    value = "2"
-  }
-
-  set {
-    name  = "backgroundController.replicas"
-    value = "1"
-  }
-
-  set {
-    name  = "cleanupController.replicas"
-    value = "1"
-  }
-
-  set {
-    name  = "reportsController.replicas"
-    value = "1"
-  }
-
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "helm_release" "falco" {
-  name             = "falco"
-  namespace        = "falco"
-  create_namespace = true
-
-  repository = "https://falcosecurity.github.io/charts"
-  chart      = "falco"
-
-  values = [
-    local.falco_values
-  ]
-
-  set {
-    name  = "driver.kind"
-    value = "modern_ebpf"
-  }
-
-  set {
-    name  = "falco.grpc.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "falco.grpcOutput.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "collectors.enabled"
-    value = "true"
-  }
-
-  depends_on = [
-    module.eks
-  ]
-}
-
-resource "helm_release" "simple_game" {
-  name             = "simple-game"
-  namespace        = kubernetes_namespace.simple_game.metadata[0].name
-  create_namespace = false
-
-  chart = "${path.module}/../../../helm/simple-game"
-
-  set {
-    name  = "image.repository"
-    value = "ghcr.io/security-org-230982/simple-game"
-  }
-
-  set {
-    name  = "image.tag"
-    value = var.image_tag
-  }
-
-  depends_on = [
-    module.eks,
-    kubernetes_namespace.simple_game,
-    helm_release.aws_load_balancer_controller,
-    helm_release.external_dns,
-    helm_release.kyverno,
-    helm_release.falco
-  ]
+  falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
+    falco_runtime_rules = local.falco_runtime_rules
+    falco_noise_tuning  = local.falco_noise_tuning
+  })
 }
