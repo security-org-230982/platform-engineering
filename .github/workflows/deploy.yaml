@@ -53,7 +53,8 @@ jobs:
       - name: Copy Falco rules into Terraform context
         run: |
           mkdir -p terraform/environments/dev/falco-rules
-          cp security/falco/rules/kubernetes-runtime-rules.yaml terraform/environments/dev/falco-rules/
+          cp security/security/falco/rules/kubernetes-runtime-rules.yaml terraform/environments/dev/falco-rules/
+          cp security/security/falco/rules/kubernetes-runtime-noise-tuning.yaml terraform/environments/dev/falco-rules/
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -71,8 +72,8 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}" \
-            -var="falco_runtime_rules_file=${{ github.workspace }}/security/falco/rules/kubernetes-runtime-rules.yaml" \
-            -var="falco_noise_tuning_file=${{ github.workspace }}/security/falco/rules/kubernetes-runtime-noise-tuning.yaml"
+            -var="falco_runtime_rules_file=${{ github.workspace }}/security/security/falco/rules/kubernetes-runtime-rules.yaml" \
+            -var="falco_noise_tuning_file=${{ github.workspace }}/security/security/falco/rules/kubernetes-runtime-noise-tuning.yaml"
   
   admission-controller-check:
     runs-on: ubuntu-latest
