@@ -34,7 +34,9 @@ jobs:
 
   admission-controller-check:
     runs-on: ubuntu-latest
-    needs: deploy-gates
+    needs: 
+      - deploy-gates
+      - apply-and-deploy
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
