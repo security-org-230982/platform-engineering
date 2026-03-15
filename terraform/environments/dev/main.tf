@@ -76,13 +76,6 @@ module "irsa_ingress" {
   }
 }
 
-resource "kubernetes_namespace" "game" {
-  metadata { name = "game" }
-  depends_on = [
-    module.eks
-  ]
-}
-
 resource "kubernetes_namespace" "simple_game" {
   metadata {
     name = "simple-game"
