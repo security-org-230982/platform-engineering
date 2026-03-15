@@ -32,35 +32,11 @@ jobs:
   cis-benchmark:
     uses: security-org-230982/security-engineering/.github/workflows/cis-benchmark.yaml@main
 
-  admission-controller-check:
-    runs-on: ubuntu-latest
-    needs: 
-      - deploy-gates
-      - apply-and-deploy
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: us-east-1
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Update kubeconfig
-        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
-
-      - name: Verify Kyverno admission controller is installed
-        run: |
-          kubectl get ns kyverno
-          kubectl wait --for=condition=available deployment/kyverno-admission-controller -n kyverno --timeout=180s
-
   apply-and-deploy:
     runs-on: ubuntu-latest
     needs:
       - deploy-gates
       - cis-benchmark
-      - admission-controller-check
     defaults:
       run:
         working-directory: terraform/environments/dev
@@ -97,11 +73,34 @@ jobs:
             -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}" \
             -var="falco_runtime_rules_file=${{ github.workspace }}/security/falco/rules/kubernetes-runtime-rules.yaml" \
             -var="falco_noise_tuning_file=${{ github.workspace }}/security/falco/rules/kubernetes-runtime-noise-tuning.yaml"
-            
+  
+  admission-controller-check:
+    runs-on: ubuntu-latest
+    needs: 
+      - apply-and-deploy
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
+
+      - name: Verify Kyverno admission controller is installed
+        run: |
+          kubectl get ns kyverno
+          kubectl wait --for=condition=available deployment/kyverno-admission-controller -n kyverno --timeout=180s            
 
   falco-runtime-check:
     runs-on: ubuntu-latest
-    needs: apply-and-deploy
+    needs: 
+      - apply-and-deploy
+      - admission-controller-check
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -129,6 +128,7 @@ jobs:
     needs:
       - apply-and-deploy
       - falco-runtime-check
+      - admission-controller-check
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -177,6 +177,7 @@ jobs:
       - apply-and-deploy
       - falco-runtime-check
       - psa-alignment-check
+      - admission-controller-check
     steps:
       - name: Checkout security-engineering repo
         uses: actions/checkout@v4
