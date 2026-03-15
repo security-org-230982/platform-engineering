@@ -128,6 +128,24 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.this.token
 }
 
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.this.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.this.token
+  }
+}
+
+locals {
+  falco_runtime_rules = file(var.falco_runtime_rules_file)
+  falco_noise_tuning  = file(var.falco_noise_tuning_file)
+
+  falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
+    falco_runtime_rules = local.falco_runtime_rules
+    falco_noise_tuning  = local.falco_noise_tuning
+  })
+}
+
 resource "kubernetes_namespace" "simple_game" {
   metadata {
     name = "simple-game"
@@ -145,14 +163,6 @@ resource "kubernetes_namespace" "simple_game" {
   depends_on = [
     module.eks
   ]
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.this.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.this.token
-  }
 }
 
 resource "helm_release" "aws_load_balancer_controller" {
@@ -284,6 +294,10 @@ resource "helm_release" "falco" {
 
   repository = "https://falcosecurity.github.io/charts"
   chart      = "falco"
+
+  values = [
+    local.falco_values
+  ]
 
   set {
     name  = "driver.kind"

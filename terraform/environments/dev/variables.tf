@@ -10,3 +10,12 @@ variable "route53_zone_name" { type = string default = "example.com" }
 variable "acm_certificate_arn" { type = string default = "" }
 variable "container_registry" { type = string default = "ghcr.io/your-org/simple-game" }
 variable "image_tag" { type = string default = "latest" }
+variable "falco_runtime_rules_file" {
+  description = "Path to the main Falco runtime rules file"
+  type        = string
+}
+
+variable "falco_noise_tuning_file" {
+  description = "Path to the Falco noise tuning rules file"
+  type        = string
+}
