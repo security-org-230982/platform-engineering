@@ -133,7 +133,7 @@ resource "helm_release" "simple_game" {
     kubernetes_namespace.simple_game,
     kubernetes_ingress_class_v1.alb,
     helm_release.aws_load_balancer_controller,
-    helm_release.kyverno,
+    //helm_release.kyverno,
     helm_release.falco
   ]
 }
