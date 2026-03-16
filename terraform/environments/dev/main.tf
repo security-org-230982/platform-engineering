@@ -34,6 +34,24 @@ module "vpc" {
   }
 }
 
+resource "aws_launch_template" "eks_nodes" {
+  name_prefix = "${var.cluster_name}-nodes-"
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "optional" # allows IMDSv1
+    http_put_response_hop_limit = 2
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "${var.cluster_name}-worker"
+    }
+  }
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
@@ -50,14 +68,19 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = {
-    default = {
-      desired_size   = 1
-      min_size       = 1
-      max_size       = 1
-      instance_types = ["t3.micro"]
-      capacity_type  = "ON_DEMAND"
+  default = {
+    desired_size   = 1
+    min_size       = 1
+    max_size       = 1
+    instance_types = ["t3.large"]
+    capacity_type  = "ON_DEMAND"
+
+    launch_template = {
+      id      = aws_launch_template.eks_nodes.id
+      version = "$Latest"
     }
   }
+}
 }
 
 module "irsa_ingress" {
