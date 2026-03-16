@@ -77,8 +77,12 @@ jobs:
           aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
           kubectl get nodes -o wide
           kubectl get ns
-          terraform state list | grep kubernetes_ingress_class_v1.alb
           terraform import kubernetes_ingress_class_v1.alb alb
+          kubectl get pods -n kube-system | grep aws-load-balancer
+          kubectl get svc -n kube-system | grep aws-load-balancer
+          kubectl get secret -n kube-system | grep aws-load-balancer
+          kubectl get validatingwebhookconfigurations | grep elbv2
+          kubectl get mutatingwebhookconfigurations | grep elbv2
 
       - name: Terraform apply
         run: |
