@@ -39,7 +39,7 @@ resource "aws_launch_template" "eks_nodes" {
 
   metadata_options {
     http_endpoint               = "enabled"
-    http_tokens                 = "optional" # allows IMDSv1
+    http_tokens                 = "optional"
     http_put_response_hop_limit = 2
   }
 
@@ -68,19 +68,19 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = {
-  default = {
-    desired_size   = 1
-    min_size       = 1
-    max_size       = 1
-    instance_types = ["t3.large"]
-    capacity_type  = "ON_DEMAND"
+    default = {
+      desired_size   = 1
+      min_size       = 1
+      max_size       = 1
+      instance_types = ["t3.large"]
+      capacity_type  = "ON_DEMAND"
 
-    launch_template = {
-      id      = aws_launch_template.eks_nodes.id
-      version = "$Latest"
+      launch_template = {
+        id      = aws_launch_template.eks_nodes.id
+        version = "$Latest"
+      }
     }
   }
-}
 }
 
 module "irsa_ingress" {
@@ -99,46 +99,50 @@ module "irsa_ingress" {
   }
 }
 
-resource "kubernetes_namespace" "simple_game" {
-  metadata {
-    name = "simple-game"
+###############################################################
+# SECOND APPLY ITEMS — COMMENTED OUT FOR FIRST APPLY
+###############################################################
 
-    labels = {
-      "pod-security.kubernetes.io/enforce"         = "restricted"
-      "pod-security.kubernetes.io/enforce-version" = "v1.30"
-      "pod-security.kubernetes.io/audit"           = "restricted"
-      "pod-security.kubernetes.io/audit-version"   = "v1.30"
-      "pod-security.kubernetes.io/warn"            = "restricted"
-      "pod-security.kubernetes.io/warn-version"    = "v1.30"
-    }
-  }
+# resource "kubernetes_namespace" "simple_game" {
+#   metadata {
+#     name = "simple-game"
+#
+#     labels = {
+#       "pod-security.kubernetes.io/enforce"         = "restricted"
+#       "pod-security.kubernetes.io/enforce-version" = "v1.30"
+#       "pod-security.kubernetes.io/audit"           = "restricted"
+#       "pod-security.kubernetes.io/audit-version"   = "v1.30"
+#       "pod-security.kubernetes.io/warn"            = "restricted"
+#       "pod-security.kubernetes.io/warn-version"    = "v1.30"
+#     }
+#   }
+#
+#   depends_on = [
+#     module.eks
+#   ]
+# }
 
-  depends_on = [
-    module.eks
-  ]
-}
+# resource "kubernetes_ingress_class_v1" "alb" {
+#   metadata {
+#     name = "alb"
+#   }
+#
+#   spec {
+#     controller = "ingress.k8s.aws/alb"
+#   }
+#
+#   depends_on = [
+#     module.eks,
+#     helm_release.aws_load_balancer_controller
+#   ]
+# }
 
-resource "kubernetes_ingress_class_v1" "alb" {
-  metadata {
-    name = "alb"
-  }
-
-  spec {
-    controller = "ingress.k8s.aws/alb"
-  }
-
-  depends_on = [
-    module.eks,
-    helm_release.aws_load_balancer_controller
-  ]
-}
-
-locals {
-  falco_runtime_rules = file(var.falco_runtime_rules_file)
-  falco_noise_tuning  = file(var.falco_noise_tuning_file)
-
-  falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
-    falco_runtime_rules = local.falco_runtime_rules
-    falco_noise_tuning  = local.falco_noise_tuning
-  })
-}
+# locals {
+#   falco_runtime_rules = file(var.falco_runtime_rules_file)
+#   falco_noise_tuning  = file(var.falco_noise_tuning_file)
+#
+#   falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
+#     falco_runtime_rules = local.falco_runtime_rules
+#     falco_noise_tuning  = local.falco_noise_tuning
+#   })
+# }
