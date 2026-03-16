@@ -83,6 +83,8 @@ jobs:
           kubectl get jobs -n kyverno
           kubectl describe pods -n kyverno
           kubectl get events -n kyverno --sort-by=.lastTimestamp
+          kubectl delete jobs -n kyverno --all
+          kubectl delete pods -n kyverno --all
 
       - name: Terraform apply
         run: |

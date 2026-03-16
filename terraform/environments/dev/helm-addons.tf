@@ -82,6 +82,11 @@ resource "helm_release" "kyverno" {
     value = "1"
   }
 
+  set {
+    name  = "cleanupJobs.enabled"
+    value = "false"
+  }
+
   depends_on = [
     module.eks
   ]
