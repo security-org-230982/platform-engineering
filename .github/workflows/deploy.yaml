@@ -75,15 +75,6 @@ jobs:
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
-          helm list -n kyverno -a
-          helm history kyverno -n kyverno
-          helm uninstall kyverno -n kyverno
-          kubectl get secrets -n kyverno | grep sh.helm.release.v1.kyverno
-          kubectl delete secret sh.helm.release.v1.kyverno.v4 -n kyverno
-          helm uninstall kyverno -n kyverno
-          kubectl delete jobs -n kyverno --all --ignore-not-found
-          
-
 
       - name: Terraform apply
         run: |

@@ -47,6 +47,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 }
 
+/*
 resource "helm_release" "kyverno" {
   name             = "kyverno"
   namespace        = "kyverno"
@@ -91,6 +92,7 @@ resource "helm_release" "kyverno" {
     module.eks
   ]
 }
+*/
 
 resource "helm_release" "falco" {
   name             = "falco"
