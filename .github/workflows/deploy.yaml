@@ -73,8 +73,7 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}" \
-            -var="falco_runtime_rules_file=${{ github.workspace }}/security/security/falco/rules/kubernetes-runtime-rules.yaml" \
-            -var="falco_noise_tuning_file=${{ github.workspace }}/security/security/falco/rules/kubernetes-runtime-noise-tuning.yaml"
+            -var="falco_runtime_rules_file=${{ github.workspace }}/security/security/falco/rules/kubernetes-runtime-rules.yaml"
   
   admission-controller-check:
     runs-on: ubuntu-latest

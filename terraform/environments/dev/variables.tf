@@ -48,7 +48,7 @@ variable "falco_runtime_rules_file" {
   type        = string
 }
 
-variable "falco_noise_tuning_file" {
-  description = "Path to the Falco noise tuning rules file"
-  type        = string
-}
+# variable "falco_noise_tuning_file" {
+#   description = "Path to the Falco noise tuning rules file"
+#   type        = string
+# }

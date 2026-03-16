@@ -135,10 +135,10 @@ resource "kubernetes_ingress_class_v1" "alb" {
 
 locals {
   falco_runtime_rules = file(var.falco_runtime_rules_file)
-  falco_noise_tuning  = file(var.falco_noise_tuning_file)
+  #falco_noise_tuning  = file(var.falco_noise_tuning_file)
 
   falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
     falco_runtime_rules = local.falco_runtime_rules
-    falco_noise_tuning  = local.falco_noise_tuning
+    # falco_noise_tuning  = local.falco_noise_tuning
   })
 }
