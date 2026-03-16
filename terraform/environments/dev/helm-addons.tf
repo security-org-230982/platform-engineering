@@ -89,9 +89,9 @@ resource "helm_release" "falco" {
   repository = "https://falcosecurity.github.io/charts"
   chart      = "falco"
 
-  values = [
-    local.falco_values
-  ]
+  #values = [
+  #  local.falco_values
+  #]
 
   depends_on = [
     module.eks
