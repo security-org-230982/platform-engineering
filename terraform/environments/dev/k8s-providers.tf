@@ -25,3 +25,13 @@ provider "helm" {
     token                  = data.aws_eks_cluster_auth.this.token
   }
 }
+
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
