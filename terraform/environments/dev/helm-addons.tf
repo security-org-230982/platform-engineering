@@ -56,6 +56,12 @@ resource "helm_release" "kyverno" {
   chart      = "kyverno"
   version    = "3.2.6"
 
+  timeout         = 900
+  wait            = true
+  wait_for_jobs   = true
+  atomic          = true
+  cleanup_on_fail = true
+
   set {
     name  = "admissionController.replicas"
     value = "1"

@@ -79,6 +79,10 @@ jobs:
           kubectl get ns
           kubectl get endpoints -n kube-system aws-load-balancer-webhook-service
           kubectl rollout status deployment/aws-load-balancer-controller -n kube-system
+          kubectl get pods -n kyverno
+          kubectl get jobs -n kyverno
+          kubectl describe pods -n kyverno
+          kubectl get events -n kyverno --sort-by=.lastTimestamp
 
       - name: Terraform apply
         run: |
