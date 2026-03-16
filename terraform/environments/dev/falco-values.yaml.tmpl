@@ -12,7 +12,4 @@ collectors:
 
 customRules:
   kubernetes-runtime-rules.yaml: |-
-${indent(4, falco_runtime_rules)}
-
-#  kubernetes-runtime-noise-tuning.yaml: |-
-#${indent(4, falco_noise_tuning)}
+    ${indent(4, falco_runtime_rules)}
