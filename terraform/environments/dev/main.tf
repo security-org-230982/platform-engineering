@@ -99,50 +99,46 @@ module "irsa_ingress" {
   }
 }
 
-###############################################################
-# SECOND APPLY ITEMS — COMMENTED OUT FOR FIRST APPLY
-###############################################################
+resource "kubernetes_namespace" "simple_game" {
+  metadata {
+    name = "simple-game"
 
-# resource "kubernetes_namespace" "simple_game" {
-#   metadata {
-#     name = "simple-game"
-#
-#     labels = {
-#       "pod-security.kubernetes.io/enforce"         = "restricted"
-#       "pod-security.kubernetes.io/enforce-version" = "v1.30"
-#       "pod-security.kubernetes.io/audit"           = "restricted"
-#       "pod-security.kubernetes.io/audit-version"   = "v1.30"
-#       "pod-security.kubernetes.io/warn"            = "restricted"
-#       "pod-security.kubernetes.io/warn-version"    = "v1.30"
-#     }
-#   }
-#
-#   depends_on = [
-#     module.eks
-#   ]
-# }
+    labels = {
+      "pod-security.kubernetes.io/enforce"         = "restricted"
+      "pod-security.kubernetes.io/enforce-version" = "v1.30"
+      "pod-security.kubernetes.io/audit"           = "restricted"
+      "pod-security.kubernetes.io/audit-version"   = "v1.30"
+      "pod-security.kubernetes.io/warn"            = "restricted"
+      "pod-security.kubernetes.io/warn-version"    = "v1.30"
+    }
+  }
 
-# resource "kubernetes_ingress_class_v1" "alb" {
-#   metadata {
-#     name = "alb"
-#   }
-#
-#   spec {
-#     controller = "ingress.k8s.aws/alb"
-#   }
-#
-#   depends_on = [
-#     module.eks,
-#     helm_release.aws_load_balancer_controller
-#   ]
-# }
+  depends_on = [
+    module.eks
+  ]
+}
 
-# locals {
-#   falco_runtime_rules = file(var.falco_runtime_rules_file)
-#   falco_noise_tuning  = file(var.falco_noise_tuning_file)
-#
-#   falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
-#     falco_runtime_rules = local.falco_runtime_rules
-#     falco_noise_tuning  = local.falco_noise_tuning
-#   })
-# }
+resource "kubernetes_ingress_class_v1" "alb" {
+  metadata {
+    name = "alb"
+  }
+
+  spec {
+    controller = "ingress.k8s.aws/alb"
+  }
+
+  depends_on = [
+    module.eks,
+    helm_release.aws_load_balancer_controller
+  ]
+}
+
+locals {
+  falco_runtime_rules = file(var.falco_runtime_rules_file)
+  falco_noise_tuning  = file(var.falco_noise_tuning_file)
+
+  falco_values = templatefile("${path.module}/falco-values.yaml.tmpl", {
+    falco_runtime_rules = local.falco_runtime_rules
+    falco_noise_tuning  = local.falco_noise_tuning
+  })
+}
