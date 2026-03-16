@@ -77,6 +77,8 @@ jobs:
           aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
           kubectl get nodes -o wide
           kubectl get ns
+          terraform state list | grep kubernetes_ingress_class_v1.alb
+          terraform import kubernetes_ingress_class_v1.alb alb
 
       - name: Terraform apply
         run: |
