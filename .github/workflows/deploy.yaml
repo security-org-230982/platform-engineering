@@ -77,10 +77,6 @@ jobs:
           aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
           kubectl get nodes -o wide
           kubectl get ns
-          terraform import kubernetes_namespace.simple_game simple-game
-          terraform import helm_release.aws_load_balancer_controller kube-system/aws-load-balancer-controller
-          terraform import helm_release.kyverno kyverno/kyverno
-          terraform import helm_release.falco falco/falco
 
       - name: Terraform apply
         run: |
