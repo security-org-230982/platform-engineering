@@ -196,6 +196,14 @@ jobs:
         run: |
           echo "===== kube-bench findings ====="
           cat kube-bench.json
+      
+      - name: Run kube-bench
+        run: |
+          kube-bench --targets node,policies --json > kube-bench.json 2>kube-bench.stderr || true
+          echo "===== kube-bench stderr ====="
+          cat kube-bench.stderr || true
+          echo "===== kube-bench.json first 40 lines ====="
+          sed -n '1,40p' kube-bench.json || true
 
   # admission-controller-check:
   #   runs-on: ubuntu-latest
