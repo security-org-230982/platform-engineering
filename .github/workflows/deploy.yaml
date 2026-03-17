@@ -137,6 +137,17 @@ jobs:
 
           echo "## CIS Benchmark Summary" >> "$GITHUB_STEP_SUMMARY"
 
+          if ! jq empty kube-bench.json >/dev/null 2>&1; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "- kube-bench artifact is not valid JSON." >> "$GITHUB_STEP_SUMMARY"
+            echo "- First lines of the file:" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            sed -n '1,40p' kube-bench.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
           TOTAL=$(jq '[.. | objects | select(has("status"))] | length' kube-bench.json)
           PASS=$(jq '[.. | objects | select(.status=="PASS")] | length' kube-bench.json)
           FAIL=$(jq '[.. | objects | select(.status=="FAIL")] | length' kube-bench.json)
