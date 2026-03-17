@@ -128,8 +128,8 @@ resource "helm_release" "simple_game" {
 
   chart = "${path.module}/../../../helm/simple-game"
 
-  timeout         = 900
-  wait            = true
+  timeout         = 1200
+  wait            = false
   atomic          = false
   cleanup_on_fail = false
 
