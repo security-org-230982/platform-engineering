@@ -5,7 +5,7 @@ on:
     paths:
       - 'terraform/**'
       - 'helm/**'
-      - '.github/workflows/terraform-plan.yaml'
+      - '.github/workflows/plan.yaml'
 
 permissions:
   id-token: write
@@ -65,4 +65,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: terraform/environments/dev/tfplan // path to the tfplan file
+          path: terraform/environments/dev/tfplan
