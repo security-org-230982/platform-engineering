@@ -116,6 +116,11 @@ jobs:
     needs:
       - apply-and-deploy
     uses: security-org-230982/security-engineering/.github/workflows/cis-benchmark.yaml@main
+    with:
+      eks-cluster-name: ${{ vars.EKS_CLUSTER_NAME }}
+      aws-region: us-east-1
+    secrets:
+      aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
   # admission-controller-check:
   #   runs-on: ubuntu-latest
