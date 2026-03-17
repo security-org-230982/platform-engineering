@@ -61,12 +61,6 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
 
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig \
-            --name ${{ vars.EKS_CLUSTER_NAME }} \
-            --region us-east-1
-
       - name: Terraform apply
         run: |
           terraform apply -auto-approve \

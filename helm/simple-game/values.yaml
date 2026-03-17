@@ -30,6 +30,8 @@ securityContext:
 
 podSecurityContext:
   fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
 
 serviceAccount:
   create: true
