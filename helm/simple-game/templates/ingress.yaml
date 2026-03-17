@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: simple-game
+                name: {{ include "simple-game.fullname" . }}
                 port:
                   number: {{ .Values.service.port }}
 {{- end }}
