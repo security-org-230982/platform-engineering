@@ -67,18 +67,10 @@ jobs:
             --name ${{ vars.EKS_CLUSTER_NAME }} \
             --region us-east-1
 
-      - name: test k8s
+      - name: Terraform apply
         run: |
-          kubectl get configmap aws-auth -n kube-system -o yaml
-          helm uninstall simple-game -n simple-game || true
-          terraform state rm helm_release.simple_game || true
-          kubectl apply -f aws-auth.yaml
-
-
-      # - name: Terraform apply
-      #   run: |
-      #     terraform apply -auto-approve \
-      #       -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}"
+          terraform apply -auto-approve \
+            -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}"
 
   psa-alignment-check:
     runs-on: ubuntu-latest
