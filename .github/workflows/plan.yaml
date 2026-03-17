@@ -15,30 +15,33 @@ permissions:
 
 jobs:
   secrets-scan:
-    uses: security-org-230982/security-engineering/.github/workflows/gitleaks.yaml@main
+    uses: security-org-230982/security-engineering/.github/workflows/secrets-scan.yaml@main
     secrets:
       GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
   iac-scan:
     uses: security-org-230982/security-engineering/.github/workflows/iac-static-scans.yaml@main
 
-  deploy-gates:
-    uses: security-org-230982/security-engineering/.github/workflows/platform-deploy-gates.yaml@main
+  image-signing-verification:
+    uses: security-org-230982/security-engineering/.github/workflows/image-signing-verification.yaml@main
     with:
-      image-ref: ghcr.io/security-org-230982/simple-game:main
+      image-ref: ghcr.io/security-org-230982/simple-game:${{ github.event.inputs.image_tag || 'main' }}
       chart-path: helm/simple-game
       values-file: helm/simple-game/values.yaml
-      certificate-identity: "https://github.com/security-org-230982/security-engineering/.github/workflows/image-post-build.yaml@refs/heads/main"
+      certificate-identity: "https://github.com/security-org-230982/security-engineering/.github/workflows/image-signing.yaml@refs/heads/main"
 
   helm-chart-scan:
     uses: security-org-230982/security-engineering/.github/workflows/helm-chart-scan.yaml@main
-
+    with:
+      chart-path: helm/simple-game
+      values-file: helm/simple-game/values.yaml
+      
   terraform-plan:
     runs-on: ubuntu-latest
     needs: 
       - secrets-scan
       - iac-scan
-      - deploy-gates
+      - image-signing-verification
       - helm-chart-scan
     defaults:
       run:
