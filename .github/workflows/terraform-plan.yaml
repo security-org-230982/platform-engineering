@@ -61,4 +61,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: terraform/environments/dev/tfplan
+          path: terraform/environments/dev/tfplan // path to the tfplan file
