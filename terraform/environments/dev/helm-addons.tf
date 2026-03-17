@@ -47,69 +47,79 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 }
 
-/*
-resource "helm_release" "kyverno" {
-  name             = "kyverno"
-  namespace        = "kyverno"
-  create_namespace = true
+###############################################################
+# KYVERNO — DISABLED
+###############################################################
 
-  repository = "https://kyverno.github.io/kyverno/"
-  chart      = "kyverno"
-  version    = "3.2.6"
+# resource "helm_release" "kyverno" {
+#   name             = "kyverno"
+#   namespace        = "kyverno"
+#   create_namespace = true
+#
+#   repository = "https://kyverno.github.io/kyverno/"
+#   chart      = "kyverno"
+#   version    = "3.2.6"
+#
+#   timeout         = 900
+#   wait            = true
+#   wait_for_jobs   = true
+#   atomic          = true
+#   cleanup_on_fail = true
+#
+#   set {
+#     name  = "admissionController.replicas"
+#     value = "1"
+#   }
+#
+#   set {
+#     name  = "backgroundController.replicas"
+#     value = "1"
+#   }
+#
+#   set {
+#     name  = "cleanupController.replicas"
+#     value = "1"
+#   }
+#
+#   set {
+#     name  = "reportsController.replicas"
+#     value = "1"
+#   }
+#
+#   set {
+#     name  = "cleanupJobs.enabled"
+#     value = "false"
+#   }
+#
+#   depends_on = [
+#     module.eks
+#   ]
+# }
 
-  timeout         = 900
-  wait            = true
-  wait_for_jobs   = true
-  atomic          = true
-  cleanup_on_fail = true
+###############################################################
+# FALCO — DISABLED
+###############################################################
 
-  set {
-    name  = "admissionController.replicas"
-    value = "1"
-  }
+# resource "helm_release" "falco" {
+#   name             = "falco"
+#   namespace        = "falco"
+#   create_namespace = true
+#
+#   repository = "https://falcosecurity.github.io/charts"
+#   chart      = "falco"
+#
+#   # values = [
+#   #   local.falco_values
+#   # ]
+#
+#   depends_on = [
+#     module.eks
+#   ]
+# }
 
-  set {
-    name  = "backgroundController.replicas"
-    value = "1"
-  }
-
-  set {
-    name  = "cleanupController.replicas"
-    value = "1"
-  }
-
-  set {
-    name  = "reportsController.replicas"
-    value = "1"
-  }
-
-  set {
-    name  = "cleanupJobs.enabled"
-    value = "false"
-  }
-
-  depends_on = [
-    module.eks
-  ]
-}
-*/
-
-resource "helm_release" "falco" {
-  name             = "falco"
-  namespace        = "falco"
-  create_namespace = true
-
-  repository = "https://falcosecurity.github.io/charts"
-  chart      = "falco"
-
-  #values = [
-  #  local.falco_values
-  #]
-
-  depends_on = [
-    module.eks
-  ]
-}
+###############################################################
+# APPLICATION
+###############################################################
 
 resource "helm_release" "simple_game" {
   name             = "simple-game"
@@ -117,6 +127,11 @@ resource "helm_release" "simple_game" {
   create_namespace = false
 
   chart = "${path.module}/../../../helm/simple-game"
+
+  timeout         = 900
+  wait            = true
+  atomic          = false
+  cleanup_on_fail = false
 
   set {
     name  = "image.repository"
@@ -132,8 +147,6 @@ resource "helm_release" "simple_game" {
     module.eks,
     kubernetes_namespace.simple_game,
     kubernetes_ingress_class_v1.alb,
-    helm_release.aws_load_balancer_controller,
-    //helm_release.kyverno,
-    helm_release.falco
+    helm_release.aws_load_balancer_controller
   ]
 }

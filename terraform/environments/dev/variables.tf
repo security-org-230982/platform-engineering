@@ -43,10 +43,10 @@ variable "image_tag" {
   default = "latest"
 }
 
-variable "falco_runtime_rules_file" {
-  description = "Path to the main Falco runtime rules file"
-  type        = string
-}
+# variable "falco_runtime_rules_file" {
+#  description = "Path to the main Falco runtime rules file"
+#  type        = string
+#}
 
 # variable "falco_noise_tuning_file" {
 #   description = "Path to the Falco noise tuning rules file"
