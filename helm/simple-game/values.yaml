@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: ghcr.io/security-org-230982/simple-game
-  tag: latest
+  tag: main
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
