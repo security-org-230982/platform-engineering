@@ -58,10 +58,17 @@ jobs:
       - name: Terraform init
         run: terraform init
 
-      - name: Terraform apply
+      - name: test k8s
         run: |
-          terraform apply -auto-approve \
-            -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}"
+          kubectl get configmap aws-auth -n kube-system -o yaml
+          echo "Get Config Map complete!!!"
+          helm status simple-game -n simple-game
+          helm list -n simple-game -a
+
+      # - name: Terraform apply
+      #   run: |
+      #     terraform apply -auto-approve \
+      #       -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}"
 
   psa-alignment-check:
     runs-on: ubuntu-latest
