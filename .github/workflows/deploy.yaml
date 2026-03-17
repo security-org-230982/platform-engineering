@@ -65,6 +65,13 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="image_tag=${{ github.event.inputs.image_tag || 'main' }}"
+      
+      - name: testing
+        run: |
+          helm upgrade --install simple-game ../../../helm/simple-game -n simple-game
+          kubectl describe deployment simple-game-simple-game -n simple-game
+          kubectl get rs -n simple-game
+          kubectl get events -n simple-game --sort-by=.lastTimestamp | tail -20
 
   psa-alignment-check:
     runs-on: ubuntu-latest
