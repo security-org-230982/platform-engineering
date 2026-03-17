@@ -70,9 +70,8 @@ jobs:
       - name: test k8s
         run: |
           kubectl get configmap aws-auth -n kube-system -o yaml
-          echo "Get Config Map complete!!!"
-          helm status simple-game -n simple-game
-          helm list -n simple-game -a
+          helm uninstall simple-game -n simple-game || true
+          terraform state rm helm_release.simple_game || true
 
       # - name: Terraform apply
       #   run: |
