@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: Product image tag
+        description: Image tag to deploy
         required: true
         default: main
 
