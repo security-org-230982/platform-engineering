@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
-    bucket         = "infrastructure-state-230982"
-    key            = "platform-engineering/dev/terraform.tfstate"
-    region         = "eu-north-1"
+    bucket       = "infrastructure-state-230982"
+    key          = "platform-engineering/dev/terraform.tfstate"
+    region       = "eu-north-1"
     use_lockfile = true
-    encrypt        = true
+    encrypt      = true
   }
 
   required_version = ">= 1.7.0"
@@ -28,3 +28,4 @@ terraform {
     }
   }
 }
+// testing workflow
