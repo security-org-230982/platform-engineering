@@ -6,6 +6,7 @@ on:
       - 'terraform/**'
       - 'helm/**'
       - '.github/workflows/plan.yaml'
+      - '**/*.md'
 
 permissions:
   id-token: write
