@@ -24,7 +24,7 @@ resources:
     memory: 256Mi
 
 securityContext:
-  allowPrivilegeEscalation: false
+  allowPrivilegeEscalation: true
   capabilities:
     drop: ["ALL"]
   readOnlyRootFilesystem: true
