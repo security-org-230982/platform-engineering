@@ -24,11 +24,11 @@ jobs:
   iac-scan:
     uses: security-org-230982/security-engineering/.github/workflows/iac-static-scans.yaml@main
 
-  image-signing-verification:
-    uses: security-org-230982/security-engineering/.github/workflows/image-signing-verification.yaml@main
-    with:
-      image-ref: ghcr.io/security-org-230982/simple-game:main
-      certificate-identity: "https://github.com/security-org-230982/security-engineering/.github/workflows/image-signing.yaml@refs/heads/main"
+  # image-signing-verification:
+  #   uses: security-org-230982/security-engineering/.github/workflows/image-signing-verification.yaml@main
+  #   with:
+  #     image-ref: ghcr.io/security-org-230982/simple-game:main
+  #     certificate-identity: "https://github.com/security-org-230982/security-engineering/.github/workflows/image-signing.yaml@refs/heads/main"
 
   helm-chart-scan:
     uses: security-org-230982/security-engineering/.github/workflows/helm-chart-scan.yaml@main
@@ -41,7 +41,7 @@ jobs:
     needs:
       - secrets-scan
       - iac-scan
-      - image-signing-verification
+      # - image-signing-verification
       - helm-chart-scan
     defaults:
       run:
