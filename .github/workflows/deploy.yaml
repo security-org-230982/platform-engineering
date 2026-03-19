@@ -65,7 +65,6 @@ jobs:
       eks-cluster-name: ${{ vars.EKS_CLUSTER_NAME }}
       aws-region: us-east-1
       namespace: simple-game
-      expected-level: restricted
       expected-version: v1.30
     secrets:
       aws-role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
