@@ -24,15 +24,15 @@ resources:
     memory: 256Mi
 
 securityContext:
-  allowPrivilegeEscalation: true
+  allowPrivilegeEscalation: false
   capabilities:
     drop: ["ALL"]
   readOnlyRootFilesystem: true
-  runAsNonRoot: false
+  runAsNonRoot: true
   runAsUser: 10001
 
 podSecurityContext:
-  runAsNonRoot: false
+  runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
 
