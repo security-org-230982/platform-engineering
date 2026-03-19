@@ -27,12 +27,12 @@ securityContext:
   allowPrivilegeEscalation: true
   capabilities:
     drop: ["ALL"]
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
   runAsNonRoot: false
   runAsUser: 10001
 
 podSecurityContext:
-  fsGroup: 10001
+  runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
 
