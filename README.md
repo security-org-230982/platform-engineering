@@ -146,4 +146,4 @@ Kubernetes CIS Benchmark
 
 Node and control plane security checks
 
-Note: This is for learning purpose only!
+Note: This is for learning purpose!!!
