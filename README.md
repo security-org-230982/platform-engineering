@@ -145,3 +145,5 @@ Post-deployment validation ensures cluster compliance with:
 Kubernetes CIS Benchmark
 
 Node and control plane security checks
+
+Note: This is for learning purpose
