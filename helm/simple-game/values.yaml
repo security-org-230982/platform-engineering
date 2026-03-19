@@ -28,11 +28,11 @@ securityContext:
   capabilities:
     drop: ["ALL"]
   readOnlyRootFilesystem: true
-  runAsNonRoot: true
+  runAsNonRoot: false
   runAsUser: 10001
 
 podSecurityContext:
-  runAsNonRoot: true
+  runAsNonRoot: false
   seccompProfile:
     type: RuntimeDefault
 
