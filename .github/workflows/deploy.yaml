@@ -7,6 +7,7 @@ on:
       - 'terraform/**'
       - 'helm/**'
       - '.github/workflows/deploy.yaml'
+      - '**/*.md'
   workflow_dispatch:
     inputs:
       image_tag:
