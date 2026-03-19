@@ -32,7 +32,7 @@ securityContext:
   runAsUser: 10001
 
 podSecurityContext:
-  runAsNonRoot: true
+  runAsNonRoot: false
   seccompProfile:
     type: RuntimeDefault
 
